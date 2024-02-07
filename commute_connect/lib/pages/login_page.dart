@@ -1,17 +1,23 @@
 import 'package:commute_connect/components/my_button.dart';
 import 'package:commute_connect/components/my_textfield.dart';
 import 'package:commute_connect/components/square_tile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
 
   //text editing controller
-  final usernameController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   //sign user in method
-  void signUserIn() {}
+  void signUserIn() async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: emailController.text,
+      password: passwordController.text,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +25,8 @@ class LoginPage extends StatelessWidget {
         backgroundColor: Colors.grey[300],
         body: SafeArea(
             child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 50),
               // logo
@@ -40,11 +46,11 @@ class LoginPage extends StatelessWidget {
               ),
 
               const SizedBox(height: 25),
-            
-              //username textfield
+
+              //email textfield
               MyTextField(
-                controller: usernameController,
-                hintText: 'Username',
+                controller: emailController,
+                hintText: 'Email',
                 obscureText: false,
               ),
               const SizedBox(height: 10),
@@ -55,7 +61,7 @@ class LoginPage extends StatelessWidget {
                 hintText: 'Password',
                 obscureText: true,
               ),
-            
+
               const SizedBox(height: 10),
               //forgot password?
 
@@ -73,9 +79,10 @@ class LoginPage extends StatelessWidget {
               ),
               const SizedBox(height: 25),
 
-
               //sign in button
-              MyButton(onTap: signUserIn,),
+              MyButton(
+                onTap: signUserIn,
+              ),
 
               const SizedBox(height: 50),
               //or continue with
@@ -86,8 +93,8 @@ class LoginPage extends StatelessWidget {
                   children: [
                     Expanded(
                         child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey[400],
+                      thickness: 0.5,
+                      color: Colors.grey[400],
                     )),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -98,18 +105,18 @@ class LoginPage extends StatelessWidget {
                     ),
                     Expanded(
                         child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey[400],
+                      thickness: 0.5,
+                      color: Colors.grey[400],
                     )),
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 50),
               //google sign in button
               // If we decide to add more sign in methods: https://youtu.be/Dh-cTQJgM-Q?t=851
               const SquareTile(imagePath: 'lib/images/google.png'),
-              
+
               const SizedBox(height: 50),
 
               //not a member? register now
@@ -120,20 +127,15 @@ class LoginPage extends StatelessWidget {
                   Text(
                     "Do not have an account?",
                     style: TextStyle(color: Colors.grey[700]),
-                    ),
+                  ),
                   const SizedBox(width: 4),
                   const Text(
                     "Register now",
                     style: TextStyle(
-                      color: Colors.blue, fontWeight: FontWeight.bold
-                    ),
+                        color: Colors.blue, fontWeight: FontWeight.bold),
                   )
-
-
                 ],
-
               )
-
             ],
           ),
         )));
