@@ -1,3 +1,7 @@
+//This page is rendered if the statefull variable showLoginPage from login_or_register_page.dart is set to true(default).
+//tapping the "Register now" link will trigger the onTap function which was passed as an argument 
+//from login_or_register_page.dart -> return LoginPage(onTap: togglePages);
+
 import 'package:commute_connect/components/my_button.dart';
 import 'package:commute_connect/components/my_textfield.dart';
 import 'package:commute_connect/components/square_tile.dart';
@@ -53,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
       builder: (context) {
         return AlertDialog(
           title: Center(
-            child: Text(message),
+            child: Text("Error: "+message+"\nPlease try again."),
           ),
         );
       },

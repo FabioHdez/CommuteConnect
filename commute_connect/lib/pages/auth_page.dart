@@ -1,3 +1,8 @@
+//This is the initial page when the app starts. (after main.dart)
+//It checks if the users is logged in.
+//if the user is logged in then redirect to home_page.dart -> HomePage()
+//if not redirect user to login_or_register_page -> LoginOrRegister()
+
 import 'package:commute_connect/pages/login_or_register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
