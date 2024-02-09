@@ -1,10 +1,11 @@
 //This page is rendered if the statefull variable showLoginPage from login_or_register_page.dart is set to true(default).
-//tapping the "Register now" link will trigger the onTap function which was passed as an argument 
+//tapping the "Register now" link will trigger the onTap function which was passed as an argument
 //from login_or_register_page.dart -> return LoginPage(onTap: togglePages);
 
 import 'package:commute_connect/components/my_button.dart';
 import 'package:commute_connect/components/my_textfield.dart';
 import 'package:commute_connect/components/square_tile.dart';
+import 'package:commute_connect/pages/forgot_pw_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -57,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
       builder: (context) {
         return AlertDialog(
           title: Center(
-            child: Text("Error: "+message+"\nPlease try again."),
+            child: Text("Error: " + message + "\nPlease try again."),
           ),
         );
       },
@@ -112,13 +113,26 @@ class _LoginPageState extends State<LoginPage> {
                 //forgot password?
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  padding: EdgeInsets.symmetric(horizontal: 25.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: Colors.grey[600]),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return ForgotPasswordPage();
+                              },
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                              color: Colors.blue, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),

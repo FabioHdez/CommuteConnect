@@ -1,5 +1,5 @@
 //This page is rendered if the statefull variable showLoginPage from login_or_register_page.dart is set to false.
-//tapping the "Log in now" link will trigger the onTap function which was passed as an argument 
+//tapping the "Log in now" link will trigger the onTap function which was passed as an argument
 //from login_or_register_page.dart -> return RegisterPage(onTap: togglePages);
 
 import 'package:commute_connect/components/my_button.dart';
@@ -39,7 +39,7 @@ class _RegisterPageState extends State<RegisterPage> {
       // pop the loading circle
       Navigator.pop(context);
       // show error message, passwords don't match
-      showErrorMessage("Passwords don't match");
+      showErrorMessage("passwords don't match");
       return;
     }
 
@@ -66,7 +66,7 @@ class _RegisterPageState extends State<RegisterPage> {
       builder: (context) {
         return AlertDialog(
           title: Center(
-            child: Text("Error: "+message+"\nPlease try again."),
+            child: Text("Error: " + message + "\nPlease try again."),
           ),
         );
       },
