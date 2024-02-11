@@ -1,3 +1,7 @@
+// This page is accessed when the user clicks on forgot password? on the login_page.dart
+// This page is a stateful widget that accepts an email address
+// Firebase will send an email to the email address with a link to change the password
+
 import 'package:commute_connect/components/my_button.dart';
 import 'package:commute_connect/components/my_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
