@@ -2,6 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:commute_connect/components/my_searchbar.dart';
 
 class SearchPage extends StatelessWidget {
   SearchPage({super.key});
@@ -27,10 +28,8 @@ class SearchPage extends StatelessWidget {
         ],
       ),
       body: Center(
-          child: Text(
-        "LOGGED IN AS: " + user.email! + "\nThis is the search page",
-        style: TextStyle(fontSize: 20),
-      )),
+          child: MySearchBar()
+      ),
     );
   }
 }
