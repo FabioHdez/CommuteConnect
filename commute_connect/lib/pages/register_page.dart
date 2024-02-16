@@ -5,6 +5,7 @@
 import 'package:commute_connect/components/my_button.dart';
 import 'package:commute_connect/components/my_textfield.dart';
 import 'package:commute_connect/components/square_tile.dart';
+import 'package:commute_connect/services/auth_sercives.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -165,7 +166,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 50),
                 //google sign in button
                 // If we decide to add more sign in methods: https://youtu.be/Dh-cTQJgM-Q?t=851
-                const SquareTile(imagePath: 'lib/images/google.png'),
+                 SquareTile(onTap:() => AuthService().googleSignIn(),
+                imagePath: 'lib/images/google.png'),
 
                 const SizedBox(height: 50),
 
