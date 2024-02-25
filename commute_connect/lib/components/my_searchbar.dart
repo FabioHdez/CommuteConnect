@@ -10,10 +10,8 @@ class MySearchBar extends StatefulWidget {
 class _MySearchBarState extends State<MySearchBar> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.grey[300],
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
+    return Padding(
+         padding: const EdgeInsets.all(32),
           child: SearchAnchor(
               builder: (BuildContext context, SearchController controller) {
             return SearchBar(
@@ -31,7 +29,7 @@ class _MySearchBarState extends State<MySearchBar> {
           }, suggestionsBuilder:
                   (BuildContext context, SearchController controller) {
             return List<ListTile>.generate(5, (int index) {
-              final String item = 'item $index';
+              final String item = 'Recent place: $index';
               return ListTile(
                 title: Text(item),
                 onTap: () {
@@ -42,7 +40,6 @@ class _MySearchBarState extends State<MySearchBar> {
               );
             });
           }),
-        ),
     );
   }
 }

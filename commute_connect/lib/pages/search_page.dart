@@ -1,8 +1,11 @@
 //Dummy search page, where user can look for rides.
 
+import 'package:commute_connect/components/my_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:commute_connect/components/my_searchbar.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class SearchPage extends StatelessWidget {
   SearchPage({super.key});
@@ -17,19 +20,46 @@ class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
-      appBar: AppBar(
         backgroundColor: Colors.grey[300],
-        actions: [
-          IconButton(
-            onPressed: signUserOut,
-            icon: Icon(Icons.logout),
-          )
-        ],
-      ),
-      body: Center(
-          child: MySearchBar()
-      ),
-    );
+        body: Stack(
+          children: [
+            FlutterMap(
+                options: MapOptions(
+                    initialCenter: LatLng(25.758091, -80.371587),
+                    initialZoom: 15),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.example.app',
+                  )
+                ]),
+            MySearchBar(),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Padding(
+                padding: const EdgeInsets.all(
+                    32), // Optional padding for better appearance
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Your button tap functionality here
+                    print('Button tapped!');
+                  },
+                  child: const Text(
+                    'Search for Rides 🔍',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ));
   }
 }
