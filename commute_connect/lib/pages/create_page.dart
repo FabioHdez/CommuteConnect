@@ -1,6 +1,7 @@
 //Dummy create page, where user can create their own rides.
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class CreatePage extends StatefulWidget {
   CreatePage({super.key});
@@ -22,10 +23,14 @@ class _CreatePageState extends State<CreatePage> {
 
   final _formKey = GlobalKey<FormState>();
   String vehicle = "Nissan";
+  String initialLocation = "";
   String destination = "";
   double pickupDetourMargin = 0.0;
   double dropOffDetourMargin = 0.0;
   bool agreement = false;
+
+  // Firebase database instance
+  FirebaseDatabase database = FirebaseDatabase.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +88,7 @@ class _CreatePageState extends State<CreatePage> {
                   ),
                   TextFormField(
                     decoration:
-                        InputDecoration(labelText: 'Pick Up Detour Margin'),
+                        InputDecoration(labelText: 'Pick Up Detour Margin (miles)'),
                     keyboardType: TextInputType.number,
                     onSaved: (value) {
                       pickupDetourMargin = double.parse(value!);
@@ -91,7 +96,7 @@ class _CreatePageState extends State<CreatePage> {
                   ),
                   TextFormField(
                     decoration:
-                        InputDecoration(labelText: 'Drop Off Detour Margin'),
+                        InputDecoration(labelText: 'Drop Off Detour Margin (miles)'),
                     keyboardType: TextInputType.number,
                     onSaved: (value) {
                       dropOffDetourMargin = double.parse(value!);
@@ -113,15 +118,40 @@ class _CreatePageState extends State<CreatePage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Your button tap functionality here
+                      onPressed: () async {
+                        // button tap functionality here
                         if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          if (!agreement) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('You must agree to the terms and conditions')),
+                          );  
+                          return;
+                          }
+                          // TODO: validate address????
                           // If the form is valid, display a Snackbar.
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Processing Data')),
+                            SnackBar(content: Text('Ride created')),
                           );
-                        }
-                        print('Button tapped!');
+                          DatabaseReference ref = FirebaseDatabase.instance.ref().child("user/${user.uid}/ride");
+                          DatabaseReference newUserRideRef = ref.push();
+                          String tripKey = newUserRideRef.key.toString();
+                          await newUserRideRef.set({
+                            "date_new": DateTime.now().millisecondsSinceEpoch,
+                            "date_past": DateTime.now().millisecondsSinceEpoch * -1,
+                            // "from": initialLocation,
+                            "from": 'static for now',
+                            "key": tripKey,
+                            "to": destination,
+                          });
+                          DatabaseReference newTripRef = FirebaseDatabase.instance.ref().child("trips/$tripKey");
+                          await newTripRef.set({
+                            "car_details": vehicle,
+                            "pickUpDetourMargin": pickupDetourMargin,
+                            "dropOffDetourMargin": dropOffDetourMargin,
+                            "driver": user.uid
+                          });
+                        }                        
                       },
                       style:
                           ElevatedButton.styleFrom(backgroundColor: Colors.black),

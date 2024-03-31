@@ -1,6 +1,5 @@
 //Dummy search page, where user can look for rides.
 
-import 'package:commute_connect/components/my_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:commute_connect/components/my_searchbar.dart';
