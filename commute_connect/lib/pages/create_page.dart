@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class CreatePage extends StatefulWidget {
-  CreatePage({super.key});
+  final Function(int) onNavigate;
+  CreatePage({super.key, required this.onNavigate});
 
   @override
   State<CreatePage> createState() => _CreatePageState();
@@ -151,7 +152,9 @@ class _CreatePageState extends State<CreatePage> {
                             "dropOffDetourMargin": dropOffDetourMargin,
                             "driver": user.uid
                           });
-                        }                        
+                        }
+                        //redirect to search page
+                        widget.onNavigate(0);
                       },
                       style:
                           ElevatedButton.styleFrom(backgroundColor: Colors.black),

@@ -30,13 +30,18 @@ class _HomePageState extends State<HomePage> {
       currentIndex = index;
     });
   }
-
-  final List _pages = [
+  late final List<Widget> _pages;
+  @override
+  void initState(){
+    super.initState();
+    _pages = [
     // dummy search page
     SearchPage(),
 
     // dummy create page
-    CreatePage(),
+    CreatePage(onNavigate: (index){
+      goToPage(index);
+    }),
 
     // dummy travel plans page
     TravelPlansPage(),
@@ -44,7 +49,7 @@ class _HomePageState extends State<HomePage> {
     // dummy profile page
     ProfilePage(),
   ];
-
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
