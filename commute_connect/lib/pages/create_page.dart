@@ -2,6 +2,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:geolocator/geolocator.dart';
+
 
 class CreatePage extends StatefulWidget {
   final Function(int) onNavigate;
@@ -32,6 +34,50 @@ class _CreatePageState extends State<CreatePage> {
 
   // Firebase database instance
   FirebaseDatabase database = FirebaseDatabase.instance;
+
+  //geolocation method to get current location
+  Future<Position?> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Check if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled; don't continue
+      // accessing the position and inform the user.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Location services are disabled.')),
+      );
+      return null;
+    }
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      // Permissions are denied; don't continue
+      // accessing the position and inform the user.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Location permissions are denied')),
+      );
+      return null;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+    // Permissions are denied forever; handle appropriately.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Location permissions are permanently denied, we cannot request permissions.'),
+        ),
+      );
+      return null;
+    }
+    // Permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
+    }
+
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +166,14 @@ class _CreatePageState extends State<CreatePage> {
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: ElevatedButton(
                       onPressed: () async {
+                        //Check for location permissions
+                        Position? position = await _determinePosition();
+                        if (position != null) {
+                          initialLocation = "${position.latitude}, ${position.longitude}";
+                        } else {
+                          // Handle the case where the location is not available
+                          print('Location is not available');
+                        }
                         // button tap functionality here
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
@@ -140,8 +194,7 @@ class _CreatePageState extends State<CreatePage> {
                           await newUserRideRef.set({
                             "date_new": DateTime.now().millisecondsSinceEpoch,
                             "date_past": DateTime.now().millisecondsSinceEpoch * -1,
-                            // "from": initialLocation,
-                            "from": 'static for now',
+                            "from": initialLocation,
                             "key": tripKey,
                             "to": destination,
                           });
