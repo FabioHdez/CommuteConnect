@@ -1,5 +1,6 @@
 //show past travel plans in list view and allows for the ability to click particular travel plans to see more information
 import 'package:commute_connect/pages/travel_details_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ class PastTravelPage extends StatefulWidget {
 }
 
 class _PastTravelPageState extends State<PastTravelPage> {
-  final String user = 'user1';
+  final String user = FirebaseAuth.instance.currentUser!.uid.toString();
   late DatabaseReference ref;
   bool _isLoading = true;
   late DateTime now;

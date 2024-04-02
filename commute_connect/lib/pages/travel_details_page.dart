@@ -28,9 +28,11 @@ class _TravelDetailsPageState extends State<TravelDetailsPage> {
   late DatabaseReference _carRef;
   late DatabaseReference _passengersRef;
   String _driverName = '';
+  String _driverName2 = '';
   String _carDetails = '';
   List<String> _passengers = [];
   List<String> _passengers2 = [];
+  List<String> _passengers3 = [];
   late DateTime _dateTimeUTC;
   bool _isLoading = false;
 
@@ -54,6 +56,11 @@ class _TravelDetailsPageState extends State<TravelDetailsPage> {
       if (event.snapshot.value != null) {
         setState(() {
           _driverName = event.snapshot.value.toString();
+          DatabaseReference driverRef2 = FirebaseDatabase.instance
+              .ref('user/${_driverName.toString()}/info/name');
+          driverRef2.once().then((DatabaseEvent event) {
+            _driverName2 = event.snapshot.value.toString();
+          });
         });
       }
     }).catchError((error) {
@@ -88,6 +95,15 @@ class _TravelDetailsPageState extends State<TravelDetailsPage> {
             }
           });
           setState(() {});
+        }
+      }
+      if (_passengers.isNotEmpty) {
+        for (int x = 0; x < _passengers.length; x++) {
+          DatabaseReference passengerRef2 = FirebaseDatabase.instance
+              .ref('user/${_passengers[x].toString()}/info/name');
+          passengerRef2.once().then((DatabaseEvent event) {
+            _passengers3.add(event.snapshot.value.toString());
+          });
         }
       }
     }).catchError((error) {
@@ -421,7 +437,7 @@ class _TravelDetailsPageState extends State<TravelDetailsPage> {
                                       ),
                                     ),
                                     Text(
-                                      _driverName,
+                                      _driverName2,
                                       style: const TextStyle(fontSize: 14),
                                     ),
                                   ],
@@ -461,7 +477,7 @@ class _TravelDetailsPageState extends State<TravelDetailsPage> {
                                                         const EdgeInsets.only(
                                                             bottom: 15.0),
                                                     child: Text(
-                                                        _passengers[index]),
+                                                        _passengers3[index]),
                                                   );
                                                 },
                                               ),

@@ -1,6 +1,7 @@
 //show upcoming travel plans in list view and allows for the ability to click particular travel plans to see more information
 import 'package:commute_connect/pages/past_travel_page.dart';
 import 'package:commute_connect/pages/travel_details_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -13,7 +14,7 @@ class TravelPlansPage extends StatefulWidget {
 }
 
 class _TravelPlansPageState extends State<TravelPlansPage> {
-  final String user = 'user1';
+  final String user = FirebaseAuth.instance.currentUser!.uid.toString();
   late DatabaseReference ref;
   bool _isLoading = true;
   late DateTime now;
