@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+
 
 
 class CreatePage extends StatefulWidget {
@@ -76,7 +78,36 @@ class _CreatePageState extends State<CreatePage> {
     // Permissions are granted and we can
     // continue accessing the position of the device.
     return await Geolocator.getCurrentPosition();
+  }
+
+  //Convert address to Coordinates
+  Future<Location?> convertAddressToCoordinates(String address) async {
+  try {
+    List<Location> locations = await locationFromAddress(address);
+    if (locations.isNotEmpty) {
+      Location location = locations.first;
+      print('Latitude: ${location.latitude}, Longitude: ${location.longitude}');
+      return location;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'No coordinates found for this address.'),
+        ),
+      );
     }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Error occurred'),
+        ),
+      );
+    print('Error occurred: $e');
+  }
+  // return a null location
+  return null;
+}
 
 
   @override
@@ -166,14 +197,7 @@ class _CreatePageState extends State<CreatePage> {
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: ElevatedButton(
                       onPressed: () async {
-                        //Check for location permissions
-                        Position? position = await _determinePosition();
-                        if (position != null) {
-                          initialLocation = "${position.latitude}, ${position.longitude}";
-                        } else {
-                          // Handle the case where the location is not available
-                          print('Location is not available');
-                        }
+                        
                         // button tap functionality here
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
@@ -183,11 +207,25 @@ class _CreatePageState extends State<CreatePage> {
                           );  
                           return;
                           }
+                          //Check for location permissions
+                          Position? position = await _determinePosition();
+                          if (position != null) {
+                            initialLocation = "${position.latitude}, ${position.longitude}";
+                          } else {
+                          // Handle the case where the location is not available
+                          print('Location is not available');
+                          return;
+                          }
                           // TODO: validate address????
-                          // If the form is valid, display a Snackbar.
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Ride created')),
-                          );
+                          Location? destinationCoordinates = await convertAddressToCoordinates(destination);
+                          if (destinationCoordinates == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Invalid destination address')),
+                            );
+                          return;
+                          }
+
+                          
                           DatabaseReference ref = FirebaseDatabase.instance.ref().child("user/${user.uid}/ride");
                           DatabaseReference newUserRideRef = ref.push();
                           String tripKey = newUserRideRef.key.toString();
@@ -197,6 +235,7 @@ class _CreatePageState extends State<CreatePage> {
                             "from": initialLocation,
                             "key": tripKey,
                             "to": destination,
+                            "toCoordinates": '${destinationCoordinates.latitude}, ${destinationCoordinates.longitude}',
                           });
                           DatabaseReference newTripRef = FirebaseDatabase.instance.ref().child("trips/$tripKey");
                           await newTripRef.set({
@@ -206,6 +245,10 @@ class _CreatePageState extends State<CreatePage> {
                             "driver": user.uid
                           });
                         }
+                        // If the form is valid, display a Snackbar.
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Ride created')),
+                        );
                         //redirect to search page
                         widget.onNavigate(0);
                       },
