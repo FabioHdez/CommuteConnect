@@ -28,7 +28,6 @@ class _CreatePageState extends State<CreatePage> {
 
   final _formKey = GlobalKey<FormState>();
   String vehicle = "Nissan";
-  String initialLocation = "";
   String destination = "";
   double pickupDetourMargin = 0.0;
   double dropOffDetourMargin = 0.0;
@@ -105,9 +104,24 @@ class _CreatePageState extends State<CreatePage> {
       );
     print('Error occurred: $e');
   }
-  // return a null location
-  return null;
-}
+    // return a null location
+    return null;
+  }
+  Future<String?> convertCoordinatesToAddress(Position position) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        String address = "${place.street}, ${place.locality}, ${place.postalCode}";
+        return address;
+      }
+    }catch(e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Current position cannot be converted to address')),
+      );
+    }
+    return null;
+  }
 
 
   @override
@@ -201,26 +215,37 @@ class _CreatePageState extends State<CreatePage> {
                         // button tap functionality here
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
+                          
+                          //Validate if is not checked
                           if (!agreement) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('You must agree to the terms and conditions')),
                           );  
                           return;
                           }
-                          //Check for location permissions
+                          //Validate for location permissions
                           Position? position = await _determinePosition();
-                          if (position != null) {
-                            initialLocation = "${position.latitude}, ${position.longitude}";
-                          } else {
-                          // Handle the case where the location is not available
-                          print('Location is not available');
-                          return;
+                          if (position == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Invalid destination address')),
+                            );
+                            return;
+                            //initialLocation = [position.latitude, position.longitude];
                           }
-                          // TODO: validate address????
+                          // Validate for destination address
                           Location? destinationCoordinates = await convertAddressToCoordinates(destination);
                           if (destinationCoordinates == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Invalid destination address')),
+                            );
+                          return;
+                          }
+
+                          // Validate for current address
+                          String? currentAddress = await convertCoordinatesToAddress(position);
+                          if (currentAddress == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Invalid current address')),
                             );
                           return;
                           }
@@ -232,10 +257,11 @@ class _CreatePageState extends State<CreatePage> {
                           await newUserRideRef.set({
                             "date_new": DateTime.now().millisecondsSinceEpoch,
                             "date_past": DateTime.now().millisecondsSinceEpoch * -1,
-                            "from": initialLocation,
+                            "from": currentAddress,
+                            "fromCoordinates": [position.latitude, position.longitude],
                             "key": tripKey,
                             "to": destination,
-                            "toCoordinates": '${destinationCoordinates.latitude}, ${destinationCoordinates.longitude}',
+                            "toCoordinates": [destinationCoordinates.latitude, destinationCoordinates.longitude],
                           });
                           DatabaseReference newTripRef = FirebaseDatabase.instance.ref().child("trips/$tripKey");
                           await newTripRef.set({
