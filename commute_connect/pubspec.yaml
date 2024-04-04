@@ -40,6 +40,10 @@ dependencies:
   google_sign_in: ^6.2.1
   google_nav_bar: ^5.0.6
 
+  # Adding google maps dependencies
+  google_maps_flutter: ^2.5.0
+  location: ^5.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
