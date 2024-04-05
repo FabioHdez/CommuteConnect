@@ -1,19 +1,18 @@
-//show upcoming travel plans in list view and allows for the ability to click particular travel plans to see more information
-import 'package:commute_connect/pages/past_travel_page.dart';
+//show past travel plans in list view and allows for the ability to click particular travel plans to see more information
 import 'package:commute_connect/pages/travel_details_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
 
-class TravelPlansPage extends StatefulWidget {
-  const TravelPlansPage({super.key});
+class PastTravelPage extends StatefulWidget {
+  const PastTravelPage({super.key});
 
   @override
-  State<TravelPlansPage> createState() => _TravelPlansPageState();
+  State<PastTravelPage> createState() => _PastTravelPageState();
 }
 
-class _TravelPlansPageState extends State<TravelPlansPage> {
+class _PastTravelPageState extends State<PastTravelPage> {
   final String user = FirebaseAuth.instance.currentUser!.uid.toString();
   late DatabaseReference ref;
   bool _isLoading = true;
@@ -31,9 +30,9 @@ class _TravelPlansPageState extends State<TravelPlansPage> {
   //partitioning data to only show past travel plans and adding delay for circular progress indicator
   Future<void> fetchData() async {
     try {
-      await Future.delayed(const Duration(milliseconds: 600));
+      await Future.delayed(const Duration(milliseconds: 800));
       await ref
-          .orderByChild('date_new')
+          .orderByChild('date_past')
           .startAt(DateTime.now().millisecondsSinceEpoch)
           .once();
     } catch (error) {
@@ -56,12 +55,12 @@ class _TravelPlansPageState extends State<TravelPlansPage> {
 
   @override
   Widget build(BuildContext context) {
-    int dateMilliseconds = now.millisecondsSinceEpoch;
+    int dateMilliseconds = now.millisecondsSinceEpoch * -1;
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Travel Plans",
+        title: const Text("Past Travel Plans",
             style: TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
         backgroundColor: Colors.black,
@@ -75,7 +74,7 @@ class _TravelPlansPageState extends State<TravelPlansPage> {
             children: [
               StreamBuilder(
                   stream: ref
-                      .orderByChild('date_new')
+                      .orderByChild('date_past')
                       .startAt(dateMilliseconds)
                       .onValue,
                   builder: (context, snapshot) {
@@ -84,7 +83,7 @@ class _TravelPlansPageState extends State<TravelPlansPage> {
                         snapshot.data?.snapshot.value != null) {
                       return _isLoading
                           ? const Padding(
-                              padding: EdgeInsets.only(top: 300, bottom: 246),
+                              padding: EdgeInsets.only(top: 360),
                               child: Center(
                                 child: CircularProgressIndicator(
                                     color: Colors.black),
@@ -93,7 +92,7 @@ class _TravelPlansPageState extends State<TravelPlansPage> {
                           : Expanded(
                               child: FirebaseAnimatedList(
                                   query: ref
-                                      .orderByChild('date_new')
+                                      .orderByChild('date_past')
                                       .startAt(dateMilliseconds),
                                   itemBuilder:
                                       (context, snapshot, animation, index) {
@@ -107,8 +106,8 @@ class _TravelPlansPageState extends State<TravelPlansPage> {
                                     return
                                         //darkens box around ride information to show it is clickable
                                         InkWell(
-                                            //passing values to travel detials page
                                             onTap: () {
+                                              //passing values to travel detials page
                                               Navigator.push(context,
                                                   MaterialPageRoute(
                                                       builder: (context) {
@@ -207,6 +206,7 @@ class _TravelPlansPageState extends State<TravelPlansPage> {
                                                                 ),
                                                                 const Icon(Icons
                                                                     .arrow_forward),
+
                                                                 //to(location) details ui
                                                                 Expanded(
                                                                   child: Column(
@@ -246,6 +246,7 @@ class _TravelPlansPageState extends State<TravelPlansPage> {
                                                             const Divider(),
                                                             const SizedBox(
                                                                 height: 16),
+
                                                             //date and time info ui
                                                             Row(
                                                               mainAxisAlignment:
@@ -282,7 +283,7 @@ class _TravelPlansPageState extends State<TravelPlansPage> {
                       //shows circular progress indicator and a messgage saying there are no past travel plans available when there is no data from the database
                       return _isLoading
                           ? const Padding(
-                              padding: EdgeInsets.only(top: 300, bottom: 246),
+                              padding: EdgeInsets.only(top: 360),
                               child: Center(
                                 child: CircularProgressIndicator(
                                     color: Colors.black),
@@ -290,9 +291,9 @@ class _TravelPlansPageState extends State<TravelPlansPage> {
                             )
                           : const Center(
                               child: Padding(
-                                padding: EdgeInsets.only(top: 290, bottom: 263),
+                                padding: EdgeInsets.only(top: 370),
                                 child: Text(
-                                  'No upcoming travel plans available',
+                                  'No past travel plans available',
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold),
@@ -301,34 +302,7 @@ class _TravelPlansPageState extends State<TravelPlansPage> {
                             );
                     }
                   }),
-
-              //view past acitivity button ui
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PastTravelPage(),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 127, vertical: 11),
-                    backgroundColor: Colors.black,
-                  ),
-                  child: const Text(
-                    'View Past Activity',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
