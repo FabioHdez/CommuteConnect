@@ -44,6 +44,10 @@ dependencies:
   firebase_database: ^10.4.9
   geolocator: ^11.0.0
   geocoding: ^3.0.0
+  # Adding google maps dependencies
+  google_maps_flutter: ^2.5.0
+  location: ^5.0.0
+  flutter_polyline_points: ^2.0.0
 
 dev_dependencies:
   flutter_test:
