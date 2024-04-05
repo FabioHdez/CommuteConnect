@@ -11,7 +11,7 @@ class _MySearchBarState extends State<MySearchBar> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-         padding: const EdgeInsets.all(32),
+         padding: const EdgeInsets.all(54),
           child: SearchAnchor(
               builder: (BuildContext context, SearchController controller) {
             return SearchBar(

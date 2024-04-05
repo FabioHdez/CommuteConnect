@@ -41,7 +41,7 @@ class SearchPage extends StatelessWidget {
               bottom: 0,
               child: Padding(
                 padding: const EdgeInsets.all(
-                    32), // Optional padding for better appearance
+                    64), // Optional padding for better appearance
                 child: ElevatedButton(
                   onPressed: () {
                     // Your button tap functionality here
