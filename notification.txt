@@ -1,0 +1,71 @@
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+Future<void> backgroundHandler(RemoteMessage message) async {
+  print("Handling a background message: ${message.messageId}");
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Notification Demo',
+      home: HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  String _message = 'No message received';
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeFirebaseMessaging();
+  }
+
+  void _initializeFirebaseMessaging() {
+    _firebaseMessaging.requestPermission(
+      sound: true,
+      badge: true,
+      alert: true,
+    );
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      setState(() {
+        _message = message.notification?.body ?? 'No message content';
+      });
+      print('Foreground message received: ${message.notification?.body}');
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('Message clicked!');
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Notifications'),
+      ),
+      body: Center(
+        child: Text(_message),
+      ),
+    );
+  }
+}
