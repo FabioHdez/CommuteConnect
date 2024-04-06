@@ -22,18 +22,6 @@ class SearchPage extends StatelessWidget {
         body: Stack(
           children: [
             MyMap(),
-
-            // FlutterMap(
-            //     options: MapOptions(
-            //         initialCenter: LatLng(25.758091, -80.371587),
-            //         initialZoom: 15),
-            //     children: [
-            //       TileLayer(
-            //         urlTemplate:
-            //             'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            //         userAgentPackageName: 'com.example.app',
-            //       )
-            //     ]),
             MySearchBar(),
             Positioned(
               left: 0,

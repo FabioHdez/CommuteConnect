@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:commute_connect/pages/created_ride_page.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 
 
@@ -128,15 +130,14 @@ class _CreatePageState extends State<CreatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
-      // appBar: AppBar(
-      //   backgroundColor: Colors.grey[300],
-      //   actions: [
-      //     IconButton(
-      //       onPressed: signUserOut,
-      //       icon: const Icon(Icons.logout),
-      //     )
-      //   ],
-      // ),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text("Create a new ride session",
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        elevation: 0,
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+      ),
       body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 50.0),
           child: Form(
@@ -144,10 +145,6 @@ class _CreatePageState extends State<CreatePage> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Text("Create a new ride session",style: TextStyle(
-                      color: Colors.grey[700],
-                      fontSize: 16,
-                  ),),
                   DropdownButtonFormField(
                     value: vehicle,
                     onChanged: (String? newValue) {
@@ -234,12 +231,15 @@ class _CreatePageState extends State<CreatePage> {
                           }
                           // Validate for destination address
                           Location? destinationCoordinates = await convertAddressToCoordinates(destination);
+
                           if (destinationCoordinates == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Invalid destination address')),
                             );
                           return;
                           }
+                          LatLng? finalLocation = LatLng(destinationCoordinates.latitude, destinationCoordinates.longitude);
+
 
                           // Validate for current address
                           String? currentAddress = await convertCoordinatesToAddress(position);
@@ -270,13 +270,21 @@ class _CreatePageState extends State<CreatePage> {
                             "dropOffDetourMargin": dropOffDetourMargin,
                             "driver": user.uid
                           });
+                          //redirect to gps page
+                          Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CreatedRidePage(finalLocation: finalLocation),
+                          ),
+                        );
                         }
                         // If the form is valid, display a Snackbar.
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Ride created')),
                         );
-                        //redirect to search page
-                        widget.onNavigate(0);
+
+                        // widget.onNavigate(0);
+                        
                       },
                       style:
                           ElevatedButton.styleFrom(backgroundColor: Colors.black),
