@@ -25,7 +25,7 @@ class _TravelPlansPageState extends State<TravelPlansPage> {
     super.initState();
     ref = FirebaseDatabase.instance.ref('user/$user/ride');
     fetchData();
-    now = DateTime.now();
+    now = DateTime.now().toLocal();
   }
 
   //partitioning data to only show past travel plans and adding delay for circular progress indicator
@@ -50,7 +50,7 @@ class _TravelPlansPageState extends State<TravelPlansPage> {
     setState(() {
       _isLoading = true;
     });
-    now = DateTime.now();
+    now = DateTime.now().toLocal();
     await fetchData();
   }
 
@@ -99,11 +99,12 @@ class _TravelPlansPageState extends State<TravelPlansPage> {
                                       (context, snapshot, animation, index) {
                                     DateTime date =
                                         DateTime.fromMillisecondsSinceEpoch(
-                                            int.parse(snapshot
-                                                .child('date_new')
-                                                .value
-                                                .toString()),
-                                            isUtc: true);
+                                                int.parse(snapshot
+                                                    .child('date_new')
+                                                    .value
+                                                    .toString()),
+                                                isUtc: true)
+                                            .toLocal();
                                     return
                                         //darkens box around ride information to show it is clickable
                                         InkWell(
