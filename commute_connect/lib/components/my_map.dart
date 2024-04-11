@@ -1,6 +1,3 @@
-// import 'package:flutter_map/flutter_map.dart';
-// import 'package:latlong2/latlong.dart';
-
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -9,7 +6,8 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:location/location.dart';
 
 class MyMap extends StatefulWidget {
-  const MyMap({Key? key}) : super(key: key);
+  final LatLng? finalLocation;
+  const MyMap({Key? key, this.finalLocation}) : super(key: key);
 
   @override
   _MyMapState createState() => _MyMapState();
@@ -28,6 +26,13 @@ class _MyMapState extends State<MyMap> {
   void initState() {
     super.initState();
     getLocationUpdates();
+    setState(() {
+      destinationP = widget.finalLocation;
+    });
+    markers.clear();
+    polylines.clear();
+    updateMarkers();
+    getPolylinePoints();
   }
 
   // Gets the current locations
@@ -42,6 +47,11 @@ class _MyMapState extends State<MyMap> {
           if (destinationP != null) {
             getPolylinePoints();
           }
+
+          // Update camera position to follow current position
+          mapController.animateCamera(
+            CameraUpdate.newLatLng(currentP),
+          );
         });
       }
     });
@@ -86,11 +96,6 @@ class _MyMapState extends State<MyMap> {
     setState(() {
       markers = {
         Marker(
-          markerId: const MarkerId("_currentLocation"),
-          icon: BitmapDescriptor.defaultMarker,
-          position: currentP,
-        ),
-        Marker(
           markerId: const MarkerId("_destinationLocation"),
           icon: BitmapDescriptor.defaultMarker,
           position: destinationP!,
@@ -112,71 +117,12 @@ class _MyMapState extends State<MyMap> {
         ),
         markers: markers,
         polylines: polylines,
-      ),
+        myLocationEnabled: true, // Add this to show the current location button
+        myLocationButtonEnabled: false, // Disable the default location button
+        mapType: MapType.normal,
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final LatLng? selectedLocation = await Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => DestinationSelectionScreen()),
-          );
-          if (selectedLocation != null) {
-            setState(() {
-              destinationP = selectedLocation;
-              markers.clear();
-              polylines.clear();
-              updateMarkers();
-              getPolylinePoints();
-            });
-          } else {
-            setState(() {
-              destinationP = null;
-              markers.clear();
-              polylines.clear();
-            });
-          }
-        },
-        mini: true,
-        child: Icon(Icons.directions),
-      ),
-
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.startFloat, // Adjust position here
-    );
-  }
-}
-
-class DestinationSelectionScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Destinations'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextButton(
-              onPressed: () {
-                // In a real application, you might use a different mechanism
-                // to select the destination, such as a map or a search screen.
-                Navigator.pop(context, LatLng(25.758091, -80.371587));
-              },
-              child: Text('Select Destination'),
-            ),
-
-            SizedBox(height: 20), // Add some space between buttons
-            ElevatedButton(
-              onPressed: () {
-                print('Clear button pressed'); // Debug print
-                Navigator.pop(context, null);
-              },
-              child: Text('Clear Route'),
-            ),
-          ],
-        ),
+        // Set camera position to follow current position
+        cameraTargetBounds: CameraTargetBounds.unbounded,
       ),
     );
   }
