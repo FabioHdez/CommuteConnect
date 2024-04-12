@@ -189,38 +189,37 @@ class _TravelDetailsPageState extends State<TravelDetailsPage> {
                     }
                   });
                 }
-
-                //thridly, deletes trip information from trip tree
-                DatabaseReference tripRef =
-                    FirebaseDatabase.instance.ref('trips/${widget.keyValue}');
-                tripRef.remove().then((_) {
-                  print('Trip data deleted successfully');
-                }).catchError((error) {
-                  print('Error deleting ride data: $error');
-                });
-
-                //lastly, deletes ride information for particular user (the driver) in the user tree
-                DatabaseReference rideRef =
-                    FirebaseDatabase.instance.ref('user/${widget.user}/ride');
-                rideRef.once().then((DatabaseEvent event) {
-                  Map<dynamic, dynamic>? ridesMap =
-                      event.snapshot.value as Map<dynamic, dynamic>?;
-                  if (ridesMap != null) {
-                    ridesMap.forEach((rideKey, tripInfo) {
-                      if (tripInfo.toString().contains(widget.keyValue)) {
-                        rideRef.child(rideKey.toString()).remove().then((_) {
-                          print('Current user ride data deleted successfully');
-                        }).catchError((error) {
-                          print('Error deleting ride data: $error');
-                        });
-                      }
-                    });
-                  }
-                });
               }
             });
           }
         }
+        //thridly, deletes trip information from trip tree
+        DatabaseReference tripRef =
+            FirebaseDatabase.instance.ref('trips/${widget.keyValue}');
+        tripRef.remove().then((_) {
+          print('Trip data deleted successfully');
+        }).catchError((error) {
+          print('Error deleting ride data: $error');
+        });
+
+        //lastly, deletes ride information for particular user (the driver) in the user tree
+        DatabaseReference rideRef =
+            FirebaseDatabase.instance.ref('user/${widget.user}/ride');
+        rideRef.once().then((DatabaseEvent event) {
+          Map<dynamic, dynamic>? ridesMap =
+              event.snapshot.value as Map<dynamic, dynamic>?;
+          if (ridesMap != null) {
+            ridesMap.forEach((rideKey, tripInfo) {
+              if (tripInfo.toString().contains(widget.keyValue)) {
+                rideRef.child(rideKey.toString()).remove().then((_) {
+                  print('Current user ride data deleted successfully');
+                }).catchError((error) {
+                  print('Error deleting ride data: $error');
+                });
+              }
+            });
+          }
+        });
       });
     } else {
       print('Error');
