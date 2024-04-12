@@ -268,7 +268,11 @@ class _CreatePageState extends State<CreatePage> {
                             "car_details": vehicle,
                             "pickUpDetourMargin": pickupDetourMargin,
                             "dropOffDetourMargin": dropOffDetourMargin,
-                            "driver": user.uid
+                            "driver": user.uid,
+                            "from": currentAddress,
+                            "fromCoordinates": [position.latitude, position.longitude],
+                            "to": destination,
+                            "toCoordinates": [destinationCoordinates.latitude, destinationCoordinates.longitude],
                           });
                           //redirect to gps page
                           Navigator.push(

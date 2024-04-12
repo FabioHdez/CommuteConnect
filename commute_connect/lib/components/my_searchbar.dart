@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class MySearchBar extends StatefulWidget {
-  const MySearchBar({super.key});
+  final TextEditingController controller;
+  const MySearchBar({super.key, required this.controller});
 
   @override
   State<MySearchBar> createState() => _MySearchBarState();
@@ -15,18 +16,19 @@ class _MySearchBarState extends State<MySearchBar> {
           child: SearchAnchor(
               builder: (BuildContext context, SearchController controller) {
             return SearchBar(
-              controller: controller,
+              controller: widget.controller,
               padding: const MaterialStatePropertyAll<EdgeInsets>(
                   EdgeInsets.symmetric(horizontal: 16.0)),
-              onTap: () {
-                controller.openView();
-              },
-              onChanged: (_) {
-                controller.openView();
-              },
+              // onTap: () {
+              //   controller.openView();
+              // },
+              // onChanged: (_) {
+              //   controller.openView();
+              // },
               leading: const Icon(Icons.search),
             );
-          }, suggestionsBuilder:
+          }, isFullScreen: false,
+          suggestionsBuilder:
                   (BuildContext context, SearchController controller) {
             return List<ListTile>.generate(5, (int index) {
               final String item = 'Recent place: $index';
