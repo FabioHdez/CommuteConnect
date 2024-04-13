@@ -5,9 +5,12 @@
 import 'package:commute_connect/components/my_button.dart';
 import 'package:commute_connect/components/my_textfield.dart';
 import 'package:commute_connect/components/square_tile.dart';
+import 'package:commute_connect/services/auth_sercives.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 
+ 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
   const RegisterPage({super.key, required this.onTap});
@@ -22,43 +25,44 @@ class _RegisterPageState extends State<RegisterPage> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  //sign user up method
-  void signUserUp() async {
-    // show loading circle
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
+ // Sign user up method
+void signUserUp() async {
+  showDialog(
+    context: context,
+    builder: (context) => const Center(child: CircularProgressIndicator()),
+  );
 
-    // check if password is confirmed
-    if (passwordController.text != confirmPasswordController.text) {
-      // pop the loading circle
-      Navigator.pop(context);
-      // show error message, passwords don't match
-      showErrorMessage("passwords don't match");
-      return;
-    }
-
-    // try creating the user
-    try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
-      // pop the loading circle
-      Navigator.pop(context);
-    } on FirebaseAuthException catch (e) {
-      // pop the loading circle
-      Navigator.pop(context);
-      // show error message
-      showErrorMessage(e.code);
-    }
+  if (passwordController.text != confirmPasswordController.text) {
+    Navigator.pop(context);
+    showErrorMessage("Passwords don't match");
+    return;
   }
 
+  try {
+    UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: emailController.text,
+      password: passwordController.text,
+    );
+
+    final databaseReference = FirebaseDatabase.instance.reference();
+
+    // Define a default profile image URL - ensure this URL is publicly accessible or correctly hosted
+    const defaultProfileImageUrl = 'https://example.com/path/to/default/nino-nakano-image.png';
+
+    if (userCredential.user != null) {
+      await databaseReference.child("users").child(userCredential.user!.uid).set({
+        'username': emailController.text.substring(0, emailController.text.indexOf('@')),
+        'bio': '',
+        'profileImageUrl': defaultProfileImageUrl,  // Add default profile image URL here
+      });
+    }
+
+    Navigator.pop(context);
+  } on FirebaseAuthException catch (e) {
+    Navigator.pop(context);
+    showErrorMessage(e.code);
+  }
+}
   // error message to user
   void showErrorMessage(String message) {
     showDialog(
@@ -165,7 +169,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 50),
                 //google sign in button
                 // If we decide to add more sign in methods: https://youtu.be/Dh-cTQJgM-Q?t=851
-                const SquareTile(imagePath: 'lib/images/google.png'),
+                 SquareTile(onTap:() => AuthService().googleSignIn(),
+                imagePath: 'lib/images/google.png'),
 
                 const SizedBox(height: 50),
 
