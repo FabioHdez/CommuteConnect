@@ -273,12 +273,14 @@ class _CreatePageState extends State<CreatePage> {
                             "fromCoordinates": [position.latitude, position.longitude],
                             "to": destination,
                             "toCoordinates": [destinationCoordinates.latitude, destinationCoordinates.longitude],
+                            "pending": false,
+                            "passengerIndex": 0
                           });
                           //redirect to gps page
                           Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CreatedRidePage(finalLocation: finalLocation),
+                            builder: (context) => CreatedRidePage(finalLocation: finalLocation,tripID: tripKey),
                           ),
                         );
                         }

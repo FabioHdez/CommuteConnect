@@ -53,8 +53,14 @@ class _SearchPageState extends State<SearchPage> {
                         title: Text('To: ${trip['to']}'),
                         subtitle: Text('- Driver: ${trip['driver']}\n- Car: ${trip['car_details']}'),
                         trailing: ElevatedButton(
-                          onPressed: () {
-                            print("object");
+                          onPressed: () async {
+                            print("Requesting trip ID: ${trip['key']}");
+                            DatabaseReference tripRef = FirebaseDatabase.instance.ref().child("trips/${trip['key']}");
+                            await tripRef.update({
+                              'pending': true,
+                              'passengerIndex': ServerValue.increment(1),
+                              'passenger${trip['passengerIndex']+1}':user.uid
+                            });
                           },
                           child: Text('Request Ride', style: TextStyle(color: Colors.white),),
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
@@ -139,7 +145,7 @@ class _SearchPageState extends State<SearchPage> {
 
       if (distanceFrom <= trip['pickUpDetourMargin'] && distanceTo <= trip['dropOffDetourMargin']) {
         setState(() {
-          eligibleTrips.add(trip); // Add to list of eligible trips
+          eligibleTrips.add({'key': key,...trip}); // Add to list of eligible trips
         });
       }
       }
