@@ -17,15 +17,75 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   final user = FirebaseAuth.instance.currentUser!;
-
   final TextEditingController searchController = TextEditingController();
+  List<Map<dynamic, dynamic>> eligibleTrips = [];
 
   // sign user out
   void signUserOut() {
     FirebaseAuth.instance.signOut();
   }
 
+
+  //SHOW MODAL FUNC
+  void showMyBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(10),
+          height: 400,
+          child: Column(
+            children: <Widget>[
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: eligibleTrips.length,
+                  itemBuilder: (context, index) {
+                    final trip = eligibleTrips[index];
+                    return Card(
+                      child: ListTile(
+                        title: Text('To: ${trip['to']}'),
+                        subtitle: Text('- Driver: ${trip['driver']}\n- Car: ${trip['car_details']}'),
+                        trailing: ElevatedButton(
+                          onPressed: () {
+                            print("object");
+                          },
+                          child: Text('Request Ride', style: TextStyle(color: Colors.white),),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+  Widget DataRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(value),
+        ],
+      ),
+    );
+  }
+
+
   void handleSearch(String address) async {
+    eligibleTrips.clear();
     Location? coordinates = await convertAddressToCoordinates(address);
     if (coordinates == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -41,7 +101,9 @@ class _SearchPageState extends State<SearchPage> {
     DataSnapshot snapshot = event.snapshot;
 
     if (!snapshot.exists) {
-      print("No trips found.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No trips found.')),
+      );
     return;
     } 
 
@@ -76,12 +138,14 @@ class _SearchPageState extends State<SearchPage> {
       ) / 1609.34; // Convert meters to miles
 
       if (distanceFrom <= trip['pickUpDetourMargin'] && distanceTo <= trip['dropOffDetourMargin']) {
-        print('Eligible Trip $key: $value');
+        setState(() {
+          eligibleTrips.add(trip); // Add to list of eligible trips
+        });
       }
       }
     });
-
-
+    showMyBottomSheet(context);
+    
     // DRIVER WILL THEN GET A NOTIFICATION THAT A RIDER WANTS TO JOIN THE TRIP
     // DRIVER WILL EITHER ACCEPT OR DECLINE
     // ROUTE WILL THEN ADJUST TO PICK UP THE RIDER
