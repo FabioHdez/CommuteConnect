@@ -34,7 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
   if (user == null) {
     throw FirebaseAuthException(code: 'NO_USER', message: 'No user logged in.');
   }
-  return FirebaseDatabase.instance.ref('users/${user.uid}')
+  return FirebaseDatabase.instance.ref('user/${user.uid}')
       .onValue
       .map((event) {
         final snapshot = event.snapshot;

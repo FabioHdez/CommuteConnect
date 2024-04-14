@@ -46,14 +46,14 @@ void signUserUp() async {
 
     final databaseReference = FirebaseDatabase.instance.reference();
 
-    // Define a default profile image URL - ensure this URL is publicly accessible or correctly hosted
-    const defaultProfileImageUrl = 'https://example.com/path/to/default/nino-nakano-image.png';
+    
+    const defaultProfileImageUrl = 'https://t3.ftcdn.net/jpg/05/71/08/24/360_F_571082432_Qq45LQGlZsuby0ZGbrd79aUTSQikgcgc.jpg';
 
     if (userCredential.user != null) {
-      await databaseReference.child("users").child(userCredential.user!.uid).set({
+      await databaseReference.child("user").child(userCredential.user!.uid).set({
         'username': emailController.text.substring(0, emailController.text.indexOf('@')),
         'bio': '',
-        'profileImageUrl': defaultProfileImageUrl,  // Add default profile image URL here
+        'profileImageUrl': defaultProfileImageUrl,  
       });
     }
 
@@ -95,7 +95,6 @@ void signUserUp() async {
                 ),
                 const SizedBox(height: 50),
 
-                //let's create an account for you
                 Text(
                   'Let\'s create an account for you!',
                   style: TextStyle(
@@ -139,7 +138,7 @@ void signUserUp() async {
                 ),
 
                 const SizedBox(height: 50),
-                //or continue with
+                
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
