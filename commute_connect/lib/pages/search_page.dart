@@ -25,7 +25,6 @@ class _SearchPageState extends State<SearchPage> {
     FirebaseAuth.instance.signOut();
   }
 
-
   //SHOW MODAL FUNC
   void showMyBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -51,19 +50,27 @@ class _SearchPageState extends State<SearchPage> {
                     return Card(
                       child: ListTile(
                         title: Text('To: ${trip['to']}'),
-                        subtitle: Text('- Driver: ${trip['driver']}\n- Car: ${trip['car_details']}'),
+                        subtitle: Text(
+                            '- Driver: ${trip['driver']}\n- Car: ${trip['car_details']}'),
                         trailing: ElevatedButton(
                           onPressed: () async {
                             print("Requesting trip ID: ${trip['key']}");
-                            DatabaseReference tripRef = FirebaseDatabase.instance.ref().child("trips/${trip['key']}");
+                            DatabaseReference tripRef = FirebaseDatabase
+                                .instance
+                                .ref()
+                                .child("trips/${trip['key']}");
                             await tripRef.update({
                               'pending': true,
                               'passengerIndex': ServerValue.increment(1),
-                              'passenger${trip['passengerIndex']+1}':user.uid
+                              'passenger${trip['passengerIndex'] + 1}': user.uid
                             });
                           },
-                          child: Text('Request Ride', style: TextStyle(color: Colors.white),),
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                          child: Text(
+                            'Request Ride',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black),
                         ),
                       ),
                     );
@@ -76,6 +83,7 @@ class _SearchPageState extends State<SearchPage> {
       },
     );
   }
+
   Widget DataRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -89,7 +97,6 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-
   void handleSearch(String address) async {
     eligibleTrips.clear();
     Location? coordinates = await convertAddressToCoordinates(address);
@@ -99,7 +106,8 @@ class _SearchPageState extends State<SearchPage> {
       );
       return;
     }
-    print('latitude: ${coordinates.latitude} longitude: ${coordinates.longitude}');
+    print(
+        'latitude: ${coordinates.latitude} longitude: ${coordinates.longitude}');
     // TODO: SEARCH FOR ANY RIDES AVAILABLE THAT ARE WITHIN THE PICKUP / DROPOFF MARGIN.
     // SEARCH ALL TRIPS
     DatabaseReference tripsRef = FirebaseDatabase.instance.ref().child("trips");
@@ -110,15 +118,15 @@ class _SearchPageState extends State<SearchPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('No trips found.')),
       );
-    return;
-    } 
+      return;
+    }
 
     Map<dynamic, dynamic> trips = snapshot.value as Map<dynamic, dynamic>;
     trips.forEach((key, value) async {
       Map trip = value as Map<dynamic, dynamic>;
-      
 
-      if (trip.containsKey('fromCoordinates') && trip.containsKey('toCoordinates')){
+      if (trip.containsKey('fromCoordinates') &&
+          trip.containsKey('toCoordinates')) {
         List<dynamic> fromCoordinates = trip['fromCoordinates'];
         List<dynamic> toCoordinates = trip['toCoordinates'];
         double fromLat = fromCoordinates[0];
@@ -129,29 +137,32 @@ class _SearchPageState extends State<SearchPage> {
         Position? position = await _determinePosition();
         if (position == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid destination address')),
+            SnackBar(content: Text('Invalid destination address')),
           );
-        return;
+          return;
         }
 
         double distanceFrom = Geolocator.distanceBetween(
-          position.latitude, position.longitude, // User's current position
-          fromLat, fromLng
-          ) / 1609.34; // Convert meters to miles
+                position.latitude,
+                position.longitude, // User's current position
+                fromLat,
+                fromLng) /
+            1609.34; // Convert meters to miles
         double distanceTo = Geolocator.distanceBetween(
-        coordinates.latitude, coordinates.longitude,
-        toLat, toLng
-      ) / 1609.34; // Convert meters to miles
+                coordinates.latitude, coordinates.longitude, toLat, toLng) /
+            1609.34; // Convert meters to miles
 
-      if (distanceFrom <= trip['pickUpDetourMargin'] && distanceTo <= trip['dropOffDetourMargin']) {
-        setState(() {
-          eligibleTrips.add({'key': key,...trip}); // Add to list of eligible trips
-        });
-      }
+        if (distanceFrom <= trip['pickUpDetourMargin'] &&
+            distanceTo <= trip['dropOffDetourMargin']) {
+          setState(() {
+            eligibleTrips
+                .add({'key': key, ...trip}); // Add to list of eligible trips
+          });
+        }
       }
     });
     showMyBottomSheet(context);
-    
+
     // DRIVER WILL THEN GET A NOTIFICATION THAT A RIDER WANTS TO JOIN THE TRIP
     // DRIVER WILL EITHER ACCEPT OR DECLINE
     // ROUTE WILL THEN ADJUST TO PICK UP THE RIDER
@@ -175,18 +186,18 @@ class _SearchPageState extends State<SearchPage> {
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
-      // Permissions are denied; don't continue
-      // accessing the position and inform the user.
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Location permissions are denied')),
-      );
-      return null;
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied; don't continue
+        // accessing the position and inform the user.
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location permissions are denied')),
+        );
+        return null;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-    // Permissions are denied forever; handle appropriately.
+      // Permissions are denied forever; handle appropriately.
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -200,34 +211,31 @@ class _SearchPageState extends State<SearchPage> {
     return await Geolocator.getCurrentPosition();
   }
 
-    //Convert address to Coordinates
+  //Convert address to Coordinates
   Future<Location?> convertAddressToCoordinates(String address) async {
-  try {
-    List<Location> locations = await locationFromAddress(address);
-    if (locations.isNotEmpty) {
-      Location location = locations.first;
-      return location;
-    } else {
+    try {
+      List<Location> locations = await locationFromAddress(address);
+      if (locations.isNotEmpty) {
+        Location location = locations.first;
+        return location;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No coordinates found for this address.'),
+          ),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-              'No coordinates found for this address.'),
+          content: Text('Error occurred'),
         ),
       );
+      print('Error occurred: $e');
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-              'Error occurred'),
-        ),
-      );
-    print('Error occurred: $e');
-  }
     // return a null location
     return null;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -251,13 +259,10 @@ class _SearchPageState extends State<SearchPage> {
                   },
                   child: const Text(
                     'Search for Rides 🔍',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16),
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black
-                  ),
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.black),
                 ),
               ),
             ),
