@@ -14,7 +14,7 @@ class UserModel {
     return UserModel(
       username: map['username'] as String? ?? 'No username',
       bio: map['bio'] as String? ?? '',
-      profileImageUrl: map['profileImageUrl'] as String? ?? 'https://example.com/path/to/default/nino-nakano-image.png',
+      profileImageUrl: map['profileImageUrl'] as String? ?? 'https://t3.ftcdn.net/jpg/05/71/08/24/360_F_571082432_Qq45LQGlZsuby0ZGbrd79aUTSQikgcgc.jpg',
     );
   }
 }

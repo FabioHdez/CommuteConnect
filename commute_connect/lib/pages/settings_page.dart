@@ -40,7 +40,7 @@ class _SettingsPageState extends State<SettingsPage> {
       return;
     }
     User? user = FirebaseAuth.instance.currentUser;
-    DatabaseReference ref = FirebaseDatabase.instance.ref("users/${user!.uid}");
+    DatabaseReference ref = FirebaseDatabase.instance.ref("user/${user!.uid}");
 
     if (_imageFile != null) {
       String filePath = 'user_profiles/${user.uid}/${DateTime.now().millisecondsSinceEpoch.toString()}';
@@ -101,7 +101,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ListTile(
                 title: TextFormField(
                   controller: _bioController,
-                  decoration: InputDecoration(labelText: 'Biiio'),
+                  decoration: InputDecoration(labelText: 'Bio'),
                   validator: (value) => value!.isEmpty ? 'Please enter a bio' : null,
                 ),
               ),
