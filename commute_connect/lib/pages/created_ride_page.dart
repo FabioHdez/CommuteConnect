@@ -40,6 +40,7 @@ class _CreatedRidePageState extends State<CreatedRidePage> {
         
   
         print("the user is: ${trip['passenger${trip['passengerIndex']}']}");
+        showConfirmationBottomSheet(context, trip);
 
         //prompt driver for confirmation
         //IF NOT CONFIRMED DELETE PASSENGER AND REDUCE PASSENGER INDEX
@@ -48,6 +49,77 @@ class _CreatedRidePageState extends State<CreatedRidePage> {
       }
     });
 }
+void showConfirmationBottomSheet(BuildContext context, Map<dynamic, dynamic> trip) {
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+        padding: EdgeInsets.all(20),
+        height: 250, // Adjust height based on your content
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              'Passenger Request 🙋‍♂️',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Passenger: ${trip['passenger${trip['passengerIndex']}']}',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(
+              'Pickup Detour: ${trip['pickUpDetourMargin']}',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(
+              'Dropoff Detour: ${trip['dropOffDetourMargin']}',
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close the modal
+                    // Handle trip acceptance here
+                    print("Trip accepted.");
+                    DatabaseReference tripRef = FirebaseDatabase.instance.ref().child("trips/${widget.tripID}");
+                    tripRef.update({
+                      'pending': false,
+                    });
+                    //TODO REROUTE THE MAP IF WE FIND A WAY TO ADD STOPS TO THE ROUTE
+                  },
+                  child: Text('Accept', style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close the modal
+                    // Handle trip rejection here
+                    print("Trip rejected.");
+                    DatabaseReference tripRef = FirebaseDatabase.instance.ref().child("trips/${widget.tripID}");
+                    tripRef.child('passenger${trip['passengerIndex']}').remove();
+                    tripRef.update({
+                      'pending': false, // Reset the pending status
+                      'passengerIndex': ServerValue.increment(-1),
+                    });
+                    
+                  },
+                  child: Text('Decline', style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
