@@ -51,8 +51,12 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Profile'),
+        title: const Text( "User Profile",
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        elevation: 0,
         backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+
       ),
       body: StreamBuilder<UserModel>(
         stream: getUserProfileStream(),
