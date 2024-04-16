@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+# The goal is to receive and display notifications to users, crucial for real-time updates in a ride-sharing app.
 
-Future<void> backgroundHandler(RemoteMessage message) async {
+import 'package:flutter/material.dart';                          # Importing Flutter's material design library, which provides the visual and structural widgets for the app's UI
+import 'package:firebase_core/firebase_core.dart';               
+import 'package:firebase_messaging/firebase_messaging.dart';     # Import the Firebase core for initialization and Firebase Messaging to handle notifications.
+
+Future<void> backgroundHandler(RemoteMessage message) async {      # Here's our handler for background messages. When a notification is received and the app is not in the foreground, this piece of code will respond.
   print("Handling a background message: ${message.messageId}");
 }
 
@@ -11,9 +13,9 @@ void main() async {
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   runApp(MyApp());
-}
+}                                                                  # In the main function, we ensure the widgets are initialized, start Firebase, set our background handler, and then run our app.
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget {                             # MyApp is a stateless widget, meaning it doesn’t hold any state. It’s just here to create our MaterialApp with a title and a home page.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,22 +25,22 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatefulWidget {                          # HomePage is where the action happens. It's a stateful widget, which means it maintains state data that can change over the lifetime of the widget.
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  String _message = 'No message received';
-
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;            
+  String _message = 'No message received';                                              # We declare an instance of FirebaseMessaging and a string to hold the latest notification message.
+ 
   @override
   void initState() {
     super.initState();
     _initializeFirebaseMessaging();
   }
 
-  void _initializeFirebaseMessaging() {
+  void _initializeFirebaseMessaging() {                                # This function requests the user's permission for notifications and sets up the message listeners for different scenarios like when the app is open or when a notification launches the app.
     _firebaseMessaging.requestPermission(
       sound: true,
       badge: true,
@@ -47,7 +49,7 @@ class _HomePageState extends State<HomePage> {
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       setState(() {
-        _message = message.notification?.body ?? 'No message content';
+        _message = message.notification?.body ?? 'No message content';                     # When we receive a message, we update our state with the new message content, triggering the UI to rebuild with the latest data.
       });
       print('Foreground message received: ${message.notification?.body}');
     });
@@ -64,7 +66,7 @@ class _HomePageState extends State<HomePage> {
         title: Text('Notifications'),
       ),
       body: Center(
-        child: Text(_message),
+        child: Text(_message),                       # Finally, we build our UI. A simple app bar displays at the top, and the body shows the latest notification message in the center of the screen.
       ),
     );
   }
