@@ -90,7 +90,8 @@ class _TravelDetailsPageState extends State<TravelDetailsPage> {
             event.snapshot.value as Map<dynamic, dynamic>?;
         if (passengersMap != null) {
           passengersMap.forEach((key, value) {
-            if (key.toString().startsWith('passenger')) {
+            if (key.toString().startsWith('passenger') &&
+                !key.toString().contains('passengerIndex')) {
               _passengers.add(value.toString());
             }
           });
@@ -167,7 +168,8 @@ class _TravelDetailsPageState extends State<TravelDetailsPage> {
               event.snapshot.value as Map<dynamic, dynamic>?;
           if (passengersMap2 != null) {
             passengersMap2.forEach((key, value) {
-              if (key.toString().startsWith('passenger')) {
+              if (key.toString().startsWith('passenger') &&
+                  !key.toString().contains('passengerIndex')) {
                 _passengers2.add(value.toString());
                 //secondly, using list of names, deletes ride information for all user in the user tree
                 for (int j = 0; j < _passengers2.length; j++) {
