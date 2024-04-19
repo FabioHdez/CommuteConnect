@@ -231,7 +231,6 @@ class _CreatePageState extends State<CreatePage> {
                           }
                           // Validate for destination address
                           Location? destinationCoordinates = await convertAddressToCoordinates(destination);
-
                           if (destinationCoordinates == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Invalid destination address')),

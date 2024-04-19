@@ -48,7 +48,11 @@ dependencies:
   google_maps_flutter: ^2.5.0
   location: ^5.0.0
   flutter_polyline_points: ^2.0.0
-
+  image_picker: ^0.8.5+3  # Added for picking images
+  firebase_storage: ^11.6.9  # Added for uploading images
+  flutter_rating_bar: ^4.0.0
+  fluttertoast: ^8.0.9
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
