@@ -44,7 +44,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBotq2f7ok4XIjizGpc3zDOTvRTJAT3mQI',
+    apiKey: '',
     appId: '1:40963012007:web:aa8def3dbe1fcd9b383282',
     messagingSenderId: '40963012007',
     projectId: 'commute-connect',
@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyC2dX2xl4ZRDEJt2omd68iooW4Nc5oD6qI',
+    apiKey: '',
     appId: '1:40963012007:android:3c519f6686dc98a4383282',
     messagingSenderId: '40963012007',
     projectId: 'commute-connect',
@@ -62,7 +62,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBaP-SdOmZVpjLuGtSsb7XOwQ-G-XYwwG0',
+    apiKey: '',
     appId: '1:40963012007:ios:9a82227c431bc056383282',
     messagingSenderId: '40963012007',
     projectId: 'commute-connect',
@@ -71,7 +71,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBaP-SdOmZVpjLuGtSsb7XOwQ-G-XYwwG0',
+    apiKey: '',
     appId: '1:40963012007:ios:f58c94616eee44f0383282',
     messagingSenderId: '40963012007',
     projectId: 'commute-connect',
