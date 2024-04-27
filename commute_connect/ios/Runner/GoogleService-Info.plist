@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string></string> // add google api key
+	<string></string>
 	<key>GCM_SENDER_ID</key>
 	<string>40963012007</string>
 	<key>PLIST_VERSION</key>
