@@ -68,7 +68,7 @@ class _MyMapState extends State<MyMap> {
         PointLatLng(destinationP!.latitude, destinationP!.longitude);
 
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      'AIzaSyCNle6rymUlDYnphTVfFbwUMIbGFDNd_0A', // Replace with your Google Maps API Key
+      'GOOGLE_MAP_API', // Replace with your Google Maps API Key
       point1,
       point2,
     );
